@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function _each(list,iter){
+            for(let i=0;i<list.length;i++){
+                iter(list[i]);
+            }
+
+            return list;
+        }
+        function add(a,b){
+            return a+b;
+        }
+
+        // 데이터를 축약하여 원하는 값을 도출하는 함수
+        // memo는 시작 값.
+        function _reduce(list,iter,memo){
+            _each(list,function(val){
+                memo = iter(memo,val);
+            })
+            return memo;
+        }
+        
+        console.log(
+            _reduce([1,2,3,4],add,0)
+        ); // 10
+
+        
+        // consider without memo
+        // 범용적 사용을 위해
+        // js에는 callbyreference가 없다.
+        // 복사본이 넘겨지고 그 복사본이 같은 메모리를 참조한다.
+        function _slice(list,num){
+            return Array.prototype.slice.call(list,num||1);
+        }
+        function _reduce2(list,iter,memo){
+            if(arguments.length == 2){
+                memo = list[0];
+                list = _slice(list);
+            }
+            _each(list,function(val){
+                    memo = iter(memo,val);
+            });
+
+            return memo;
+        }
+        console.log(
+            _reduce2([1,2,3,4],add)
+        ); // 10
+        console.log(
+            _reduce2([1,2,3,4],add,2)
+        ); // 12
+    </script>
+</body>
+</html>

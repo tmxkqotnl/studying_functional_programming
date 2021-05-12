@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../js/_js.js"></script>
+    <script>
+        var users = [
+        { id: 10, name: 'ID', age: 36 },
+        { id: 20, name: 'BJ', age: 32 },
+        { id: 30, name: 'JM', age: 32 },
+        { id: 40, name: 'PJ', age: 27 },
+        { id: 50, name: 'HA', age: 25 },
+        { id: 60, name: 'JE', age: 26 },
+        { id: 70, name: 'JI', age: 31 },
+        { id: 80, name: 'MP', age: 23 },
+        { id: 90, name: 'FP', age: 13 }
+        ];
+      //집계 병합 축약 등 folding
+        
+        //min, max, min_by, max_by
+        function _min(data){
+            return _reduce(data,function(a,b){
+                return a<b ? a:b;
+            });
+        }
+        console.log(_min([3,1,-4,10,7]));
+
+        function _max(data){
+            return _reduce(data,function(a,b){
+                return a>b ? a:b;
+            });
+        }
+        console.log(_max([3,1,-4,10,7]));
+
+        function _min_by(data,iter){
+            return _reduce(data,function(a,b){
+                return iter(a)<iter(b) ? a:b;
+            });
+        }
+        console.log(_min_by([3,1,-4,10,7],Math.abs));
+
+        function _max_by(data,iter){
+            return _reduce(data,function(a,b){
+                return iter(a)>iter(b) ? a:b;
+            });
+        }
+        console.log(_max_by([3,1,-4,-11,10,7],Math.abs));
+
+        var _min_by = _curryr(_min_by);
+        _go(users,
+            _filter(user => user.age>=30),
+            _min_by(_get('age')),
+            console.log
+        );
+        function _negate(predi){
+            return function(val){
+                return !predi(val);
+            }
+        }
+        function _reject_abstract(data, predi){
+            return _filter(data,_negate(predi));
+        }
+        var _reject = _curryr(_reject_abstract);
+        var _max_by = _curryr(_max_by);
+        _go(users,
+            _reject(user=>user.age>=30),
+            _max_by(_get('age')),
+            _get('name'),
+            console.log
+        );
+        _go(users,
+            _reject(user=>user.age>=30),
+            _min,
+            console.log
+        );
+    </script>
+  </body>
+</html>

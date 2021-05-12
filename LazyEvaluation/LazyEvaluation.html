@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script src = "../js/partial.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-esm-min.js"></script>
+    <script>
+        let mi = 0, fi = 0;
+        _.go(
+            _.range(100),
+            _.map(function(val){
+                ++mi;
+                return val*val;
+            }),
+            _.filter(function(val){
+                ++fi;
+                return val%2;
+            }),
+            _.take(5),
+            console.log
+        );
+        console.log(mi,fi); // 100 100
+            // 최적화
+        mi = 0, fi = 0;
+        _.go(
+            _.range(100),
+            L.map(function(val){
+                ++mi;
+                return val*val;
+            }),
+            L.filter(function(val){
+                ++fi;
+                return val%2;
+            }),
+            L.take(5),
+            console.log
+        );
+        console.log(mi,fi); // 10 10
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /* consider null object */
+
+        function _curryr(fn){
+            return function(a,b){
+                return arguments.legnth == 2 ? fn(a,b) : function(b){
+                    return fn(b,a);
+                }
+            }    
+        }
+        const _get = _curryr(function(o,k){
+            return o === null ? undefined : o[k];
+        });
+        
+        // modi
+        const _length = _get('length');
+        function _each(list,iter){
+            for(let i = 0, len = _length(list);i<len;i++) iter(list[i]);
+            return list;
+        }
+        _each(null,console.log); // no error    
+        
+
+        //apply other function
+
+        function _map(list, mapper){
+            let new_list = [];
+            _each(list,(v)=>{
+                new_list.push(mapper(v));
+            });
+            return new_list;
+        }
+        function _filter(list, predi){
+            let new_list = [];
+            _each(list,(v)=>{
+                if(predi(v)) new_list.push(v);
+            });
+            return new_list;
+        }
+        function _slice(list,num){
+            return Array.prototype.slice.call(list,num||1);
+        }
+        function _reduce(list,iter,memo){
+            if(arguments.length == 2){
+                memo = list[0];
+                list = _slice(list);
+            }
+            _each(list,v=>{
+                memo = iter(memo,v);
+            });
+
+            return memo;
+        }
+        function _pipe(){
+            let fns = arguments;
+            return function(arg){
+                return _reduce(fns,function(arg,fn){
+                    return fn(arg);
+                },arg);
+            }
+        }
+        function _go(arg){
+            let fns = _slice(arguments);
+            return _pipe.apply(null,fns)(arg);
+        }
+
+        console.log(_map(null,(v)=>v)); // []
+        console.log(_filter(null,(v)=>v)); // []
+        
+        _go(null,
+            function (a) { return a % 2; },
+            function (a) { return a * 2; },
+            console.log); // 0
+        
+        const _mapc = _curryr(_map);
+        const _filterc = _curryr(_filter);
+        _go([1,2,3,4],
+            _filterc((v) => v%2),
+            _mapc((v) => v*v),
+            console.log
+        ); // [1,9]
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../js/partial.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-esm-min.js"></script>
+    <script src = "data.js"></script>
+    <script>
+        const users_by_id = _.index_by(users,'id');
+        console.log(users_by_id);
+        function find_user_by_id(id){
+            return users_by_id[id];
+        }
+        
+        const comments_by_post_id = _.go(comments,
+        _.map(function(comment){
+            return _.extend({
+                user:find_user_by_id(comment.user_id)
+            },comment);
+        }),
+        _.group_by('post_id')
+        );
+        console.log(comments_by_post_id);
+
+        const posts_filtered = _.map(posts, function(post){
+            return _.extend({
+                comments:comments_by_post_id[post.id],
+                user:find_user_by_id(post.user_id)
+            },post);
+        });
+        console.log(posts_filtered);
+
+        const posts_group_by_user_id = _.group_by('user_id')(posts_filtered);
+        console.log(posts_group_by_user_id);
+        const users_with_posts = _.map(users,function(user){
+            return _.extend({
+                posts:posts_group_by_user_id[user.id]
+            },user);
+        });
+        console.log(users_with_posts);
+
+        /*  practice with data above*/
+        
+        var target = users_with_posts[2];
+
+        _.go(target.posts,
+        _.pluck('comments'),
+        _.flatten,
+        console.log);
+        console.log(_.deep_pluck(target,'posts.comments'));
+
+        _.go(
+        _.deep_pluck(target,'posts.comments.user.name'),
+        _.flatten,
+        _.uniq,
+        console.log);
+
+        _.go(
+        _.deep_pluck(target,'posts.comments.user.name'),
+        _.flatten,
+        _.count_by,
+        console.log);
+
+        _.go(posts_filtered,
+        _.filter(function(post){
+            return _.find(post.comments, function(comment){
+                return comment.user_id === target.id;
+            });
+        }),
+        console.log
+        )
+
+
+    </script>
+</body>
+</html>

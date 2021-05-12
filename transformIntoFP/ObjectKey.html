@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // review
+        function _map(list, mapper){
+            let nl = [];
+            _each_keys(list,function(v){
+                nl.push(mapper(v));
+            });
+
+            return nl;
+        }
+        function _filter(list, predi){
+            let nl = [];
+            _each_keys(list,function(v){
+                if(predi(v)) nl.push(v);
+            });
+
+            return nl;
+        }
+        function _slice(list, num){
+            return Array.prototype.slice.call(list,num||1);
+        }
+        function _reduce(list, iter, memo){
+            if(arguments.length == 2){
+                memo = list[0];
+                list = _slice(list);
+            }
+            _each_keys(list,function(v){
+                memo = iter(memo,v);
+            });
+
+            return memo;
+        }
+        function _curry(fn){
+            return function(a,b){
+                return arguments.length == 2 ? fn(a,b) :function(b){
+                    return fn(a,b);
+                }
+            }
+        }
+        function _curryr(fn){
+            return function(a,b){
+                return arguments.length == 2 ? fn(a,b) :function(b){
+                    return fn(b,a);
+                }
+            }
+        }
+        function _pipe(){
+            let fns = arguments;
+            return function(arg){
+                return _reduce(fns,function(arg,fn){
+                    return fn(arg);
+                }, arg);
+            };
+        }
+        function _go(arg){
+            let fns = _slice(arguments);
+            return _pipe.apply(null,fns)(arg);
+        }
+
+
+        // Object keys
+        function _is_object(obj){
+            // 느낌표두개(!!)는 다른 타입의 데이터를 boolean 타입으로 명시적으로 형 변환(Type Conversion)하기 위해 사용
+            return typeof obj == 'object' && !!obj ;
+        }
+        function _keys(obj){
+            return _is_object(obj) ? Object.keys(obj) : [];
+        }
+        console.log(Object.keys({name:'object'}));
+        console.log(Object.keys([1,2,3,4]));
+        console.log(Object.keys(10));
+        // console.log(Object.keys(null)); // error
+
+        console.log(_keys({name:'object'}));
+        console.log(_keys([1,2,3,4]));
+        console.log(_keys(10));
+        console.log(_keys(null));
+
+        // 다형성을 높이자
+
+        function _each_keys(list,iter){
+            // handle both object and array(array like)
+            let keys = _keys(list);
+            for(let i = 0; i<keys.length;i++) iter(list[keys[i]]);
+
+            return list;
+        }
+
+        const _mapr = _curryr(_map);
+        let temp = {
+            10 : 'ID',
+            15 : 'HD',
+            20 : 'KD',
+        };
+        // test
+        _each_keys([1,2,3,4],function(v){
+            console.log(v);
+        });
+        
+        _each_keys(temp,function(v){
+            console.log(v);
+        });
+
+        _go(temp,
+        _mapr(function(v){
+            console.log(v);
+            return v.toLowerCase();
+        }),
+        console.log
+        );
+    </script>
+</body>
+</html>

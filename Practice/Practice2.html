@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../js/partial.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-esm-min.js"></script>
+    <script src="data.js"></script>
+    <script>
+      /* 장바구니 */
+
+      // count(selected)
+      const total_quantity = _.reduce(function (totalQ, product) {
+        return _.reduce(
+          product.sizes,
+          function (totalQ, size) {
+            return totalQ + size.quantity;
+          },
+          totalQ
+        );
+      }, 0);
+
+      _.go(
+        products,
+        _.filter(function (product) {
+          return product.is_selected;
+        }),
+        total_quantity,
+        console.log
+      );
+
+      // all prices
+      const total_price = _.reduce(function(totalP,product){
+            return _.reduce(product.sizes,function(totalP,size){
+                return totalP+(product.price+size.price)*size.quantity;      
+            },totalP);
+        },0);
+
+      _.go(products,
+        total_price,
+        console.log
+      );
+
+      // total price of selected items
+       _.go(
+          products,
+          _.filter(function(product){
+            return product.is_selected;
+          }),
+          total_price,
+          console.log
+        )
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script src = "../js/_js.js"></script>
+    <script>
+var users = [
+        { id: 10, name: 'ID', age: 36 },
+        { id: 20, name: 'BJ', age: 32 },
+        { id: 30, name: 'JM', age: 32 },
+        { id: 40, name: 'PJ', age: 27 },
+        { id: 50, name: 'HA', age: 25 },
+        { id: 60, name: 'JE', age: 26 },
+        { id: 70, name: 'JI', age: 31 },
+        { id: 80, name: 'MP', age: 23 },
+        { id: 90, name: 'FP', age: 13 }
+        ];
+
+        console.log(_filter(users,function(user){
+            return user.age>30;
+        }));
+        // _reject
+        function _reject(data, predi){
+            return _filter(data,function(v){
+                return !predi(v);
+            });
+        }
+        console.log(_reject(users,function(user){
+            return user.age>30;
+        }));
+        // reject abstraction
+        function _negate(fn){
+            return function(val){
+                return !fn(val);
+            }
+        }
+
+        function _reject_abstract(data, predi){
+            return _filter(data,_negate(predi));
+        }
+        console.log(_reject_abstract(users,function(user){
+            return user.age>30;
+        }));
+
+        // compact
+        function _identity(data){
+            return data;
+        }
+        const _compact = _filterr(_identity);
+        console.log(_compact([1,2,0,null,false,{}]));
+
+    </script>
+</body>
+</html>

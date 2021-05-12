@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var list = [1, 2, 3, 4];
+        var users = [
+            { id: 1, name: 'ID', age: 36 },
+            { id: 2, name: 'BJ', age: 32 },
+            { id: 3, name: 'JM', age: 32 },
+            { id: 4, name: 'PJ', age: 27 },
+            { id: 5, name: 'HA', age: 25 },
+            { id: 6, name: 'JE', age: 26 },
+            { id: 7, name: 'JI', age: 31 },
+            { id: 8, name: 'MP', age: 23 }
+        ];
+
+
+        function _filter(list, predi) {
+            var new_list = [];
+            _each(list, (v) => {
+                if (predi(v)) {
+                    new_list.push(v);
+                }
+            });
+
+            return new_list;
+        }
+        function _map(list, mapper) {
+            var new_list = [];
+            _each(list, (v) => {
+                new_list.push(mapper(v));
+            });
+
+            return new_list;
+        }
+        function _each(list, iter) {
+            for (let i = 0; i < list.length; i++) iter(list[i]);
+            return list;
+        }
+        function _slice(list, num) {
+            return Array.prototype.slice.call(list, num || 1);
+        }
+
+        function _reduce(list, iter, memo) {
+            if (arguments.length == 2) {
+                memo = list[0];
+                list = _slice(list);
+            }
+            _each(list, function (v) {
+                memo = iter(memo, v);
+            });
+
+            return memo;
+        }
+        function add(a, b) {
+            return a + b;
+        }
+        function _curryr(fn){
+            return function(a,b){
+                return arguments.length == 2 ? fn(a,b) : function(b){
+                    return fn(b,a);
+                }
+            }
+        }
+
+        var _get = _curryr(function(obj,key){
+            return obj == null ? undefined : obj[key];
+        });
+
+        // 연속된 함수들을 실행시켜주는 함수
+        // 추상화된 레벨의 reduce
+        function _pipe() {
+            var fns = arguments;
+            return function (arg) {
+                return _reduce(fns, function (arg, fn) {
+                    return fn(arg);
+                }, arg);
+            }
+        }
+        var f1 = _pipe(
+            function (a) { return a + 1; },
+            function (a) { return a * 2; },
+            function (a) { return a * a; }
+        );
+
+        console.log(f1(1)); // arg = 1
+
+        // 결과를 바로 만드는 함수
+        // 순서가 강조된 함수
+        function _go(arg) {
+            var fns = _slice(arguments);
+            return _pipe.apply(null, fns)(arg); //apply!!
+        }
+        console.log(_go(1,
+            function (a) { return a + 1; },
+            function (a) { return a * 2; },
+            function (a) { return a * a * a; }
+        ));
+
+        _go(
+            users,
+            function(users){
+                return _filter(users,function(user){
+                    return user.age>=30;
+                });
+            },
+            function(users){
+                return _map(users,_get('name'));
+            },
+            console.log
+        );
+        
+        // currying을 이용해 더 간단하게
+        var _map = _curryr(_map);
+        var _filter = _curryr(_filter);
+
+        _go(
+            users,
+            _filter(user=>{
+                return user.age>=30;
+            }),
+            _map(_get('age')),
+            console.log
+        );
+        
+
+    </script>
+</body>
+
+</html>

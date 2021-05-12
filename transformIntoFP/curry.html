@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //currying - curry, curryr example form
+        function _curry(fn){
+            return function(a){
+                return function(b){
+                    return fn(a,b);
+                }
+            }
+        }
+
+        // example 1
+        var add = _curry(function(a,b){
+            return a+b;
+        });
+
+        var add10 = add(10);
+        console.log(_curry);
+        console.log(add);
+        console.log(add10);
+        console.log(add10(5));
+
+        // example 2
+        console.log(add(5)(3));
+
+        // example 3
+        function _curryr(fn){
+            return function(a,b){
+                return arguments.length == 2 ? 
+                fn(a,b) : function(b){
+                    return fn(b,a); // for expression
+                }
+            }
+        }
+        var sub = _curryr(function(a,b){
+            return a-b;
+        });
+        console.log(sub(20,10)); // 10
+        console.log(sub(20)(10)); // -10 
+    </script>
+</body>
+</html>

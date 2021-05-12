@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var users = [
+            { id: 1, name: 'ID', age: 36 },
+            { id: 2, name: 'BJ', age: 32 },
+            { id: 3, name: 'JM', age: 32 },
+            { id: 4, name: 'PJ', age: 27 },
+            { id: 5, name: 'HA', age: 25 },
+            { id: 6, name: 'JE', age: 26 },
+            { id: 7, name: 'JI', age: 31 },
+            { id: 8, name: 'MP', age: 23 }
+        ];
+
+        function _get(obj, key){
+            return obj == null ? undefined : obj[key];
+        }
+        console.log(users[1].name, _get(users[1],'name'));
+        //console.log(users[10].name); // error
+        console.log(_get(users[10],'name')); // undefined
+
+        // curryr
+        function _curryr(fn){
+            return function(a,b){
+                return arguments.length == 2 ? fn(a,b) : function(b){
+                    return fn(b,a);
+                }
+            }
+        }
+
+        // test
+
+        function _each(data, fn){
+            for(let i=0;i<data.length;i++){
+                fn(data[i]);
+            }
+            return data;
+        }
+        function _map(data,mapper){
+            var new_data = [];
+            _each(data,function(datum){
+                new_data.push(mapper(datum));
+            });
+
+            return new_data;
+        }
+        function _filter(data,predi){
+            var new_data = [];
+            _each(data,function(datum){
+                if(predi(datum)) new_data.push(datum);
+            });
+            return new_data;
+        }
+
+
+        var _getInfo = _curryr(function(obj, key){
+            return obj == null ? undefined : obj[key];
+        });
+
+        var names = _map(_filter(users,function(user){
+            return user.age>=30;
+        }),_getInfo('name'));
+        console.log(names);
+
+        var ages = _map(_filter(users,function(user){
+            return user.age>=30;
+        }), _getInfo('age'));
+        console.log(ages);
+        
+    </script>
+</body>
+
+</html>

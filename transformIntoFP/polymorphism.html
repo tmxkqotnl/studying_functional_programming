@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // list object method map
+        var map_r = [1, 2, 3, 4].map(function (val) {
+            return val * 2;
+        });
+
+        // list object method filter
+        var filter_r = [1, 2, 3, 4].filter(function (val) {
+            return val % 2;
+        });
+
+        console.log(map_r, filter_r);
+
+        console.log(document.querySelectorAll('*')); // NodeList
+
+        // console.log(document.querySelectorAll('*').map(function(val){return val.nodeName})); // is not a array
+
+
+        function _each(list_like, iter) {
+            for (let i = 0; i < list_like.length; i++) {
+                iter(list_like[i]);
+            }
+            return list_like;
+        }
+        function _map(list, mapper) {
+            var new_list = [];
+            _each(list, function (val) {
+                if (mapper(val)) {
+                    new_list.push(val);
+                }
+            });
+            return new_list;
+        }
+        console.log(_map(document.querySelectorAll('*'), function (val) {
+            return val.nodeName;
+        }));
+    </script>
+</body>
+</html>
